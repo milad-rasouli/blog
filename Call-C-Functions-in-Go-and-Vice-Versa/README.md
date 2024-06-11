@@ -56,10 +56,13 @@ func main() {
 
 Run it :
 ```bash
-CGO_ENABELED=1 go build -o ./bin/hello ./main.go
+$ go env -w CGO_ENABLED=1
+$ go build -o ./bin/hello ./main.go
 
-./bin/hello
+$ ./bin/hello
 ```
+> [!NOTE]
+> To build the program you have to have GCC or G++ on your machine. [Linux](https://www.cherryservers.com/blog/how-to-install-gcc-on-ubuntu), [Windows](https://jmeubank.github.io/tdm-gcc/download/) *Don't forget to check add to path while installing*
 
 Result:
 ```
