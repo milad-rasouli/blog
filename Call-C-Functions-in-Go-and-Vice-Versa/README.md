@@ -161,3 +161,67 @@ Hello from C code
 Greetings, Mili from 2023! We come in peace :)
 Greetings, Mili Mili from 2024! We come in peace :)
 ```
+
+## Call Go Function in C
+Here you can see how to call a Go function in a C function.
+1. put ``` //export GoPrintNameAge ``` above your go function.
+2. put ``` extern void GoPrintNameAge(char*,int); ``` in your c code, then you can call it.
+3. build it with this flag ``` -ldflags='-extldflags=-Wl,--allow-multiple-definition' ```
+
+```go 
+package main
+
+/*
+#include <stdio.h>
+
+extern void GoPrintNameAge(char*,int);
+
+void getNameAge(){
+	char name[100];
+	int age;
+
+	printf("Enter Your Name: ");
+	scanf("%s",&name);
+
+	printf("Enter Your Age: ");
+	scanf("%d",&age);
+
+	GoPrintNameAge(name,age);
+}
+*/
+import "C"
+import (
+	"fmt"
+)
+
+//export GoPrintNameAge
+func GoPrintNameAge(name *C.char, age C.int) {
+	goName := C.GoString(name)
+	goAge := int(age)
+	fmt.Printf("Hello, %s!\nYour age is %d\n", goName, goAge)
+}
+
+func main() {
+	C.getNameAge()
+}
+
+```
+
+### Run it:
+```bash
+$ go env -w CGO_ENABLED=1
+$ go build  -ldflags='-extldflags=-Wl,--allow-multiple-definition' -o ./bin/hello ./main.go
+
+$ ./bin/hello
+```
+
+### Result:
+
+```bash
+
+Enter Your Name: Milad
+Enter Your Age: 10
+Hello, Milad!
+Your age is 10
+
+```
