@@ -36,3 +36,14 @@ tcpdump -i e0
 ``` bash
 ping 10.10.2.15
 ```
+
+# VLAN
+
+``` bash
+create sub GE8 1234
+set interface mtu packet 9000 GE8.1234
+lcp create GE8.1234 host-if e0.1234
+set interface state GE8.1234 up
+set interface ip address GE8.1234 10.10.2.16/24
+# set interface ip address GE8.1234 2001:db8:0:2::1/64
+```
