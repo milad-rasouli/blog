@@ -154,3 +154,39 @@ set interface ip address GE8.1237 10.0.5.1/30
 set interface ip address GE8.1237 2001:db8:0:5::1/64
 lcp create GE8.1237 host-if e0.1237
 ```
+# Differences Between Subinterface and VLAN
+
+Both **subinterfaces** and **VLANs** are used to segment traffic, but they differ in their specific use cases and behavior:
+
+| **Feature**                | **Subinterface**                                       | **VLAN**                                                   |
+|----------------------------|-------------------------------------------------------|------------------------------------------------------------|
+| **Definition**              | A logical division of a physical interface.           | A method of tagging Ethernet frames with a VLAN ID.         |
+| **Layer**                   | Operates at Layer 3 (IP layer).                       | Operates at Layer 2 (Data link layer).                      |
+| **Purpose**                 | Used for IP address segregation.                      | Used to segregate traffic within a switched network.        |
+| **Tagging**                 | Does not involve any tagging in itself.               | Involves tagging frames with a VLAN ID (802.1Q).            |
+| **Scope**                   | Used mainly in routing and WAN connections.           | Used mainly within LANs to separate broadcast domains.       |
+| **Configuration**           | Part of the routing interface.                        | A part of a switch’s port or a router-on-a-stick setup.     |
+| **Use Case**                | Typically used in routers to configure multiple IP subnets. | Used to segment traffic between different logical networks within a switch. |
+
+## Subinterfaces
+
+A **subinterface** is a logical interface created from a physical interface, allowing you to assign multiple IP addresses or network segments on the same physical port. Subinterfaces are mostly used for routing purposes, often in router-on-a-stick setups, or for connecting to different networks over the same interface.
+
+### Example Use Case for Subinterface
+
+Let's say you have a router and you want it to handle traffic for two different networks, `192.168.10.0/24` and `192.168.20.0/24`, using a single physical interface.
+
+**Configuration Example**:
+
+```bash
+# Create subinterfaces
+sudo ip link add link eth0 name eth0.10 type vlan id 10
+sudo ip link add link eth0 name eth0.20 type vlan id 20
+
+# Assign IP addresses to the subinterfaces
+sudo ip addr add 192.168.10.1/24 dev eth0.10
+sudo ip addr add 192.168.20.1/24 dev eth0.20
+
+# Bring the subinterfaces up
+sudo ip link set eth0.10 up
+sudo ip link set eth0.20 up
