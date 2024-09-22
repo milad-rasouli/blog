@@ -85,5 +85,72 @@ ip a | grep enp1s
 39: foo@enp1s0: <BROADCAST,MULTICAST> mtu 5000 qdisc noqueue state DOWN group default qlen 1000
 # ip link set foo  mtu 5000
 
+```
 
+# Vlan with ip 
+``` bash
+# Untagged interface
+ip addr add 10.0.1.2/30 dev enp1s0
+ip addr add 2001:db8:0:1::2/64 dev enp1s0
+ip link set enp1s0 up mtu 9000
+
+# Single 802.1q tag 1234
+ip link add link enp1s0 name enp1s0.q type vlan id 1234
+ip link set enp1s0.q up mtu 9000
+ip addr add 10.0.2.2/30 dev enp1s0.q
+ip addr add 2001:db8:0:2::2/64 dev enp1s0.q
+
+# Double 802.1q tag 1234 inner-tag 1000
+ip link add link enp1s0.q name enp1s0.qinq type vlan id 1000
+ip link set enp1s0.qinq up mtu 9000
+ip addr add 10.0.3.3/30 dev enp1s0.qinq
+ip addr add 2001:db8:0:3::2/64 dev enp1s0.qinq
+
+# Single 802.1ad tag 2345
+ip link add link enp1s0 name enp1s0.ad type vlan id 2345 proto 802.1ad
+ip link set enp1s0.ad up mtu 9000
+ip addr add 10.0.4.2/30 dev enp1s0.ad
+ip addr add 2001:db8:0:4::2/64 dev enp1s0.ad
+
+# Double 802.1ad tag 2345 inner-tag 1000
+ip link add link enp1s0.ad name enp1s0.qinad type vlan id 1000 proto 802.1q
+ip link set enp1s0.qinad up mtu 9000
+ip addr add 10.0.5.2/30 dev enp1s0.qinad
+ip addr add 2001:db8:0:5::2/64 dev enp1s0.qinad
+
+```
+
+# Vlan in vpp
+
+``` bash
+## Look mom, no `ip` commands!! :-)
+set interface state GE8 up
+lcp create GE8 host-if e0
+set interface mtu packet 9000 GE8
+set interface ip address GE8 10.0.1.1/30
+set interface ip address GE8 2001:db8:0:1::1/64
+create sub GE8 1234
+set interface mtu packet 9000 GE8.1234
+lcp create GE8.1234 host-if e0.1234
+set interface state GE8.1234 up
+set interface ip address GE8.1234 10.0.2.1/30
+set interface ip address GE8.1234 2001:db8:0:2::1/64
+create sub GE8 1235 dot1q 1234 inner-dot1q 1000 exact-match
+set interface state GE8.1235 up
+set interface mtu packet 9000 GE8.1235
+lcp create GE8.1235 host-if e0.1235
+set interface ip address GE8.1235 10.0.3.1/30
+set interface ip address GE8.1235 2001:db8:0:3::1/64
+create sub GE8 1236 dot1ad 2345 exact-match
+set interface state GE8.1236 up
+lcp create GE8.1236 host-if e0.1236
+set interface mtu packet 9000 GE8.1236
+set interface ip address GE8.1236 10.0.4.1/30
+set interface ip address GE8.1236 2001:db8:0:4::1/64
+create sub GE8 1237 dot1ad 2345 inner-dot1q 1000 exact-match
+set interface state GE8.1237 up
+set interface mtu packet 9000 GE8.1237
+set interface ip address GE8.1237 10.0.5.1/30
+set interface ip address GE8.1237 2001:db8:0:5::1/64
+lcp create GE8.1237 host-if e0.1237
 ```
