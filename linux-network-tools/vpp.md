@@ -190,3 +190,32 @@ sudo ip addr add 192.168.20.1/24 dev eth0.20
 # Bring the subinterfaces up
 sudo ip link set eth0.10 up
 sudo ip link set eth0.20 up
+```
+
+# Vpp bond
+
+bad practice:
+
+``` bash
+create bond mode lacp load-balance l2
+lcp create BondEthernet0 host-if be0
+## MAC of be0 is now a temp/ephemeral MAC
+bond add BondEthernet0 GE2
+bond add BondEthernet0 GE8
+## MAC of the bond0 device is now that of GE2
+## MAC of GE8 is that of bond0 (ie. Te3/0/2)
+
+```
+best practice:
+
+``` bash
+vppctl create bond mode lacp load-balance l2
+vppctl bond add BondEthernet0 GE2
+## MAC of the BondEthernet0 device is now that of GE2
+
+vppctl lcp create BondEthernet0 host-if be0
+## MAC of be0 is now that of BondEthernet0
+
+vppctl bond add BondEthernet0 GE8
+## MAC of GE8 is that of BondEthernet0 (ie. Te3/0/2)
+```
