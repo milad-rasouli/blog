@@ -209,13 +209,18 @@ bond add BondEthernet0 GE8
 best practice:
 
 ``` bash
-vppctl create bond mode lacp load-balance l2
-vppctl bond add BondEthernet0 GE2
+create bond mode lacp load-balance l2
+bond add BondEthernet0 GE2
 ## MAC of the BondEthernet0 device is now that of GE2
 
-vppctl lcp create BondEthernet0 host-if be0
+lcp create BondEthernet0 host-if be0
 ## MAC of be0 is now that of BondEthernet0
 
-vppctl bond add BondEthernet0 GE8
+bond add BondEthernet0 GE8
 ## MAC of GE8 is that of BondEthernet0 (ie. Te3/0/2)
+```
+## Ping test
+
+``` bash
+
 ```
