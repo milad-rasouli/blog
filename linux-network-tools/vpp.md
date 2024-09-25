@@ -222,5 +222,63 @@ bond add BondEthernet0 GE8
 ## Ping test
 
 ``` bash
+cp default netns dataplane
+lcp lcp-auto-subint on
+lcp create TenGigabitEthernet3/0/0 host-if e0
+set interface state TenGigabitEthernet3/0/0 up
+set interface mtu packet 9000 TenGigabitEthernet3/0/0
+set interface ip address TenGigabitEthernet3/0/0 10.0.1.1/30
+set interface ip address TenGigabitEthernet3/0/0 2001:db8:0:1::1/64
+create sub TenGigabitEthernet3/0/0 1234
+set interface mtu packet 9000 TenGigabitEthernet3/0/0.1234
+set interface state TenGigabitEthernet3/0/0.1234 up
+set interface ip address TenGigabitEthernet3/0/0.1234 10.0.2.1/30
+set interface ip address TenGigabitEthernet3/0/0.1234 2001:db8:0:2::1/64
+create sub TenGigabitEthernet3/0/0 1235 dot1q 1234 inner-dot1q 1000 exact-match
+set interface state TenGigabitEthernet3/0/0.1235 up
+set interface mtu packet 9000 TenGigabitEthernet3/0/0.1235
+set interface ip address TenGigabitEthernet3/0/0.1235 10.0.3.1/30
+set interface ip address TenGigabitEthernet3/0/0.1235 2001:db8:0:3::1/64
+create sub TenGigabitEthernet3/0/0 1236 dot1ad 2345 exact-match
+set interface state TenGigabitEthernet3/0/0.1236 up
+set interface mtu packet 9000 TenGigabitEthernet3/0/0.1236
+set interface ip address TenGigabitEthernet3/0/0.1236 10.0.4.1/30
+set interface ip address TenGigabitEthernet3/0/0.1236 2001:db8:0:4::1/64
+create sub TenGigabitEthernet3/0/0 1237 dot1ad 2345 inner-dot1q 1000 exact-match
+set interface state TenGigabitEthernet3/0/0.1237 up
+set interface mtu packet 9000 TenGigabitEthernet3/0/0.1237
+set interface ip address TenGigabitEthernet3/0/0.1237 10.0.5.1/30
+set interface ip address TenGigabitEthernet3/0/0.1237 2001:db8:0:5::1/64
 
+## The LACP bond
+create bond mode lacp load-balance l2
+bond add BondEthernet0 GE2
+bond add BondEthernet0 GE8
+lcp create BondEthernet0 host-if be0
+set interface state GE2 up
+set interface state GE8 up
+set interface state BondEthernet0 up
+set interface mtu packet 9000 BondEthernet0
+set interface ip address BondEthernet0 10.1.1.1/30
+set interface ip address BondEthernet0 2001:db8:1:1::1/64
+create sub BondEthernet0 1234
+set interface mtu packet 9000 BondEthernet0.1234
+set interface state BondEthernet0.1234 up
+set interface ip address BondEthernet0.1234 10.1.2.1/30
+set interface ip address BondEthernet0.1234 2001:db8:1:2::1/64
+create sub BondEthernet0 1235 dot1q 1234 inner-dot1q 1000 exact-match
+set interface state BondEthernet0.1235 up
+set interface mtu packet 9000 BondEthernet0.1235
+set interface ip address BondEthernet0.1235 10.1.3.1/30
+set interface ip address BondEthernet0.1235 2001:db8:1:3::1/64
+create sub BondEthernet0 1236 dot1ad 2345 exact-match
+set interface state BondEthernet0.1236 up
+set interface mtu packet 9000 BondEthernet0.1236
+set interface ip address BondEthernet0.1236 10.1.4.1/30
+set interface ip address BondEthernet0.1236 2001:db8:1:4::1/64
+create sub BondEthernet0 1237 dot1ad 2345 inner-dot1q 1000 exact-match
+set interface state BondEthernet0.1237 up
+set interface mtu packet 9000 BondEthernet0.1237
+set interface ip address BondEthernet0.1237 10.1.5.1/30
+set interface ip address BondEthernet0.1237 2001:db8:1:5::1/64
 ```
